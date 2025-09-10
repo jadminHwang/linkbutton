@@ -83,30 +83,65 @@
       .controls-panel {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: 1rem;
       }
 
       .control-group {
         border: none;
         padding: 0;
         margin: 0;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        border: 1px solid transparent;
+        transition: border-color 0.3s;
+      }
+      
+      .control-group[open] {
+        border-color: var(--panel-border);
+      }
+
+      .control-group summary {
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+        color: #ffffff;
+        background: var(--accent-gradient);
+        cursor: pointer;
+        list-style: none; /* remove default marker */
+        position: relative;
+        transition: background 0.2s;
+      }
+      
+      .control-group summary:hover {
+        filter: brightness(1.1);
+      }
+
+      .control-group summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .control-group summary::after {
+        content: '▼';
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.8em;
+        transition: transform 0.2s;
+      }
+
+      .control-group[open] > summary::after {
+        transform: translateY(-50%) rotate(180deg);
+      }
+      
+      .control-group-content {
+        padding: 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 1.25rem;
+        background: rgba(255,255,255,0.2);
       }
 
-      .control-group legend {
-        display: inline-block;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-        padding: 0.5rem 1rem;
-        color: #ffffff;
-        background: var(--accent-gradient);
-        border-radius: var(--border-radius);
-        width: 100%;
-        text-align: center;
-      }
 
       .form-field {
         display: flex;
@@ -272,23 +307,27 @@
         .app-container {
           grid-template-columns: 1fr;
         }
+        .panel {
+          padding: 1.5rem;
+        }
         .preview-panel {
           position: static;
+          min-height: 200px;
         }
         .title {
           font-size: 2.2rem;
+          margin-bottom: 1.5rem;
         }
       }
     </style>
     
     <!-- Load React and ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     
     <!-- Load Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.1.1",
@@ -388,99 +427,107 @@
             <h1 className="title">블로그용 링크버튼 생성기</h1>
             <div className="app-container">
               <div className="controls-panel panel">
-                <fieldset className="control-group">
-                  <legend>내용 & 링크</legend>
-                  <div className="form-field">
-                    <label htmlFor="text">버튼 텍스트</label>
-                    <input type="text" id="text" name="text" value={styles.text} onChange={handleStyleChange} />
+                
+                <details className="control-group" open>
+                  <summary>내용 & 링크</summary>
+                  <div className="control-group-content">
+                    <div className="form-field">
+                      <label htmlFor="text">버튼 텍스트</label>
+                      <input type="text" id="text" name="text" value={styles.text} onChange={handleStyleChange} />
+                    </div>
+                    <div className="form-field">
+                      <label htmlFor="url">링크 URL</label>
+                      <input type="url" id="url" name="url" value={styles.url} onChange={handleStyleChange} />
+                    </div>
                   </div>
-                  <div className="form-field">
-                    <label htmlFor="url">링크 URL</label>
-                    <input type="url" id="url" name="url" value={styles.url} onChange={handleStyleChange} />
-                  </div>
-                </fieldset>
+                </details>
 
-                <fieldset className="control-group">
-                  <legend>스타일</legend>
-                  <div className="form-field">
-                    <label>텍스트 색상</label>
-                    <div className="color-input-wrapper">
-                      <input type="color" name="textColor" value={styles.textColor} onChange={handleStyleChange} />
-                      <input type="text" name="textColor" value={styles.textColor} onChange={handleStyleChange} />
+                <details className="control-group">
+                  <summary>스타일</summary>
+                  <div className="control-group-content">
+                    <div className="form-field">
+                      <label>텍스트 색상</label>
+                      <div className="color-input-wrapper">
+                        <input type="color" name="textColor" value={styles.textColor} onChange={handleStyleChange} />
+                        <input type="text" name="textColor" value={styles.textColor} onChange={handleStyleChange} />
+                      </div>
                     </div>
-                  </div>
-                  <div className="form-field">
-                    <label>배경 색상</label>
-                    <div className="color-input-wrapper">
-                      <input type="color" name="bgColor" value={styles.bgColor} onChange={handleStyleChange} />
-                      <input type="text" name="bgColor" value={styles.bgColor} onChange={handleStyleChange} />
+                    <div className="form-field">
+                      <label>배경 색상</label>
+                      <div className="color-input-wrapper">
+                        <input type="color" name="bgColor" value={styles.bgColor} onChange={handleStyleChange} />
+                        <input type="text" name="bgColor" value={styles.bgColor} onChange={handleStyleChange} />
+                      </div>
                     </div>
-                  </div>
-                  <div className="form-field">
-                     <label htmlFor="fontSize">글자 크기: {styles.fontSize}px</label>
+                    <div className="form-field">
+                      <label htmlFor="fontSize">글자 크기: {styles.fontSize}px</label>
                       <input type="range" id="fontSize" name="fontSize" min="12" max="32" value={styles.fontSize} onChange={handleStyleChange} />
-                  </div>
-                   <div className="form-field">
+                    </div>
+                    <div className="form-field">
                       <label htmlFor="paddingY">안쪽 여백 (상하): {styles.paddingY}px</label>
                       <input type="range" id="paddingY" name="paddingY" min="0" max="40" value={styles.paddingY} onChange={handleStyleChange} />
-                  </div>
-                  <div className="form-field">
+                    </div>
+                    <div className="form-field">
                       <label htmlFor="paddingX">안쪽 여백 (좌우): {styles.paddingX}px</label>
                       <input type="range" id="paddingX" name="paddingX" min="0" max="60" value={styles.paddingX} onChange={handleStyleChange} />
-                  </div>
-                   <div className="form-field">
+                    </div>
+                    <div className="form-field">
                       <label htmlFor="borderRadius">테두리 굴곡: {styles.borderRadius}px</label>
                       <input type="range" id="borderRadius" name="borderRadius" min="0" max="50" value={styles.borderRadius} onChange={handleStyleChange} />
-                  </div>
-                   <div className="form-field">
+                    </div>
+                    <div className="form-field">
                       <label htmlFor="borderWidth">테두리 두께: {styles.borderWidth}px</label>
                       <input type="range" id="borderWidth" name="borderWidth" min="0" max="10" value={styles.borderWidth} onChange={handleStyleChange} />
-                  </div>
-                   <div className="form-field">
-                    <label>테두리 색상</label>
-                    <div className="color-input-wrapper">
-                      <input type="color" name="borderColor" value={styles.borderColor} onChange={handleStyleChange} />
-                      <input type="text" name="borderColor" value={styles.borderColor} onChange={handleStyleChange} />
+                    </div>
+                    <div className="form-field">
+                      <label>테두리 색상</label>
+                      <div className="color-input-wrapper">
+                        <input type="color" name="borderColor" value={styles.borderColor} onChange={handleStyleChange} />
+                        <input type="text" name="borderColor" value={styles.borderColor} onChange={handleStyleChange} />
+                      </div>
                     </div>
                   </div>
-                </fieldset>
+                </details>
                 
-                <fieldset className="control-group">
-                  <legend>호버 & 애니메이션</legend>
-                  <div className="form-field">
-                    <label>호버 텍스트 색상</label>
-                    <div className="color-input-wrapper">
-                      <input type="color" name="hoverTextColor" value={styles.hoverTextColor} onChange={handleStyleChange} />
-                      <input type="text" name="hoverTextColor" value={styles.hoverTextColor} onChange={handleStyleChange} />
+                <details className="control-group">
+                  <summary>호버 & 애니메이션</summary>
+                  <div className="control-group-content">
+                    <div className="form-field">
+                      <label>호버 텍스트 색상</label>
+                      <div className="color-input-wrapper">
+                        <input type="color" name="hoverTextColor" value={styles.hoverTextColor} onChange={handleStyleChange} />
+                        <input type="text" name="hoverTextColor" value={styles.hoverTextColor} onChange={handleStyleChange} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                      <label>호버 배경 색상</label>
+                      <div className="color-input-wrapper">
+                        <input type="color" name="hoverBgColor" value={styles.hoverBgColor} onChange={handleStyleChange} />
+                        <input type="text" name="hoverBgColor" value={styles.hoverBgColor} onChange={handleStyleChange} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                      <label>호버 테두리 색상</label>
+                      <div className="color-input-wrapper">
+                        <input type="color" name="hoverBorderColor" value={styles.hoverBorderColor} onChange={handleStyleChange} />
+                        <input type="text" name="hoverBorderColor" value={styles.hoverBorderColor} onChange={handleStyleChange} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                        <label htmlFor="transitionDuration">전환 효과 시간: {styles.transitionDuration}s</label>
+                        <input type="range" id="transitionDuration" name="transitionDuration" min="0" max="2" step="0.1" value={styles.transitionDuration} onChange={handleStyleChange} />
+                    </div>
+                    <div className="form-field">
+                        <label htmlFor="animation">기본 애니메이션</label>
+                        <select id="animation" name="animation" value={styles.animation} onChange={handleStyleChange}>
+                            <option value="none">없음</option>
+                            <option value="pulse">펄스</option>
+                            <option value="shake">쉐이크 (호버 시)</option>
+                        </select>
                     </div>
                   </div>
-                  <div className="form-field">
-                    <label>호버 배경 색상</label>
-                    <div className="color-input-wrapper">
-                      <input type="color" name="hoverBgColor" value={styles.hoverBgColor} onChange={handleStyleChange} />
-                      <input type="text" name="hoverBgColor" value={styles.hoverBgColor} onChange={handleStyleChange} />
-                    </div>
-                  </div>
-                   <div className="form-field">
-                    <label>호버 테두리 색상</label>
-                    <div className="color-input-wrapper">
-                      <input type="color" name="hoverBorderColor" value={styles.hoverBorderColor} onChange={handleStyleChange} />
-                      <input type="text" name="hoverBorderColor" value={styles.hoverBorderColor} onChange={handleStyleChange} />
-                    </div>
-                  </div>
-                  <div className="form-field">
-                      <label htmlFor="transitionDuration">전환 효과 시간: {styles.transitionDuration}s</label>
-                      <input type="range" id="transitionDuration" name="transitionDuration" min="0" max="2" step="0.1" value={styles.transitionDuration} onChange={handleStyleChange} />
-                  </div>
-                  <div className="form-field">
-                      <label htmlFor="animation">기본 애니메이션</label>
-                      <select id="animation" name="animation" value={styles.animation} onChange={handleStyleChange}>
-                          <option value="none">없음</option>
-                          <option value="pulse">펄스</option>
-                          <option value="shake">쉐이크 (호버 시)</option>
-                      </select>
-                  </div>
-                </fieldset>
+                </details>
+
               </div>
 
               <div>
