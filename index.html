@@ -249,11 +249,13 @@
         border: 2px dashed var(--border-color);
         position: sticky;
         top: 2rem;
+        z-index: 10;
       }
 
       .code-panel {
           margin-top: 2rem;
           position: relative;
+          z-index: 1;
       }
 
       .code-panel pre {
@@ -327,6 +329,7 @@
     
     <!-- Load Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
 <script type="importmap">
 {
   "imports": {
